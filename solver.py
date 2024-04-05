@@ -105,8 +105,61 @@ def a_star(matrix_maze, start, end):
 
     return path
 
-def get_neighbors(vertex):
 
+def dijkstra(matrix_maze, start, end):
+    """
+    Perform Dijkstra's algorithm to find a path from start to end in the maze represented by matrix_maze.
+
+    Args:
+        matrix_maze (list): A matrix representation of the maze.
+        start (tuple): The starting vertex.
+        end (tuple): The ending vertex.
+
+    Returns:
+        list: A list of vertices representing the path from start to end.
+    """
+    # sets to track visited and unvisited vertices
+    visited = set()
+    nrows, ncols = matrix_maze.shape
+    unvisited = {(i, j) for i in range(nrows) for j in range(ncols)}
+    # dijkstra table to store shortest distance and previous vertex
+    dijkstra_table = {vertex: (float('inf'), None) for vertex in unvisited}
+    # use (-100, -100) for the previous vertex of the start vertex
+    dijkstra_table[start] = (0, (-100, -100))
+    # set current vertex to start
+    current = start
+    while unvisited:
+        # mark current vertex as visited
+        visited.add(current)
+        unvisited.remove(current)
+        # update distances for neighboring vertices
+        for neighbor in get_neighbors(current):
+            row, col = neighbor
+            # check if neighbor is unvisited and not a wall
+            if neighbor not in visited and matrix_maze[row][col] == 0:
+                # add distance by one
+                distance = dijkstra_table[current][0] + 1
+                # update dijkstra table if new distance is shorter
+                if distance < dijkstra_table[neighbor][0]:
+                    dijkstra_table[neighbor] = (distance, current)
+        # set current vertex to unvisited vertex with shortest distance
+        if unvisited:
+            current = min([vertex for vertex in unvisited], key=lambda x: dijkstra_table[x][0])
+
+    # initialize path list and backtrack from end to start
+    path = []
+    backtrack = end
+    # keep adding vertices to path until start is reached
+    while backtrack and backtrack != (-100, -100):
+        path.append(backtrack)
+        backtrack = dijkstra_table[backtrack][1]
+    # reverse path to get start to end path
+    path.reverse()
+
+    return path
+
+
+def get_neighbors(vertex):
     """
     Get neighboring vertices of a given vertex.
     
