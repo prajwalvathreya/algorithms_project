@@ -42,6 +42,7 @@ def bfs(matrix_maze, start, end):
 
     return path
 
+
 def dfs(matrix_maze, start, end):
     """
     Perform depth-first search to find a path from start to end in the maze represented by matrix_maze.
@@ -77,10 +78,10 @@ def dfs(matrix_maze, start, end):
                 stack.append(neighbor)
                 path.append(neighbor)
 
-    return path  
+    return path
+
 
 # a star with h as manhattan distance from node to end and g as steps taken
-
 def a_star(matrix_maze, start, end):
     a_star_heap = []
     visited = set()
@@ -106,8 +107,74 @@ def a_star(matrix_maze, start, end):
 
     return path
 
-def get_neighbors(vertex):
 
+def dijkstra(matrix_maze, start, end, unvisited_vertices):
+    """
+    Perform Dijkstra's algorithm to find a path from start to end in the maze represented by matrix_maze.
+
+    Args:
+        matrix_maze (list): A matrix representation of the maze.
+        start (tuple): The starting vertex.
+        end (tuple): The ending vertex.
+
+    Returns:
+        list: A list of vertices representing the path from start to end.
+    """
+    if (end not in unvisited_vertices) or (start not in unvisited_vertices):
+        print("No path found.")
+        # return a list with only starting vertex if no path is found
+        return [start]
+    # set to track unvisited vertices
+    unvisited = set(unvisited_vertices)
+    # dijkstra table to store shortest distance and previous vertex
+    dijkstra_table = {vertex: (float('inf'), None) for vertex in unvisited}
+    # use (-100, -100) for the previous vertex of the start vertex
+    dijkstra_table[start] = (0, (-100, -100))
+    # check if start is a wall
+    if matrix_maze[start[0]][start[1]] != 0:
+        return []
+    # set current vertex to start
+    current = start
+    while unvisited:
+        # mark current vertex as visited
+        unvisited.remove(current)
+        # update distances for neighboring vertices
+        for neighbor in get_neighbors(current):
+            row, col = neighbor
+            # check if neighbor is unvisited and not a wall
+            if neighbor in unvisited and matrix_maze[row][col] == 0:
+                # add distance by one
+                distance = dijkstra_table[current][0] + 1
+                # update dijkstra table if new distance is shorter
+                if distance < dijkstra_table[neighbor][0]:
+                    dijkstra_table[neighbor] = (distance, current)
+                    # print("Update: ", neighbor, " from ", current, " with distance ", distance)
+                    # print("After update: ", neighbor, " from ", dijkstra_table[neighbor][1], " with distance ", dijkstra_table[neighbor][0])
+        # set current vertex to a new unvisited vertex with shortest distance
+        if unvisited:
+            current = min([vertex for vertex in unvisited], key=lambda x: dijkstra_table[x][0])
+
+    # initialize path list and backtrack from end to start
+    path = []
+    backtrack = end
+    # print("dijkstra_table: ", dijkstra_table)
+    # keep adding vertices to path until start is reached
+    while backtrack and backtrack != (-100, -100):
+        path.append(backtrack)
+        # print("backtrack: ", backtrack)
+        # print("dijkstra_table[backtrack][1]: ", dijkstra_table[backtrack][1])
+        backtrack = dijkstra_table[backtrack][1]
+    # reverse path to get start to end path
+    path = path[::-1]
+    # return a list with only starting vertex if no path is found
+    if path[0] != start:
+        print("No path found.")
+        return [start]
+    else:
+        return path
+
+
+def get_neighbors(vertex):
     """
     Get neighboring vertices of a given vertex.
     
