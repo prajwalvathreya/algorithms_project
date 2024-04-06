@@ -1,6 +1,7 @@
 from collections import deque
 from generator import *
 import random
+import time
 
 def bfs(matrix_maze, start, end):
     """
@@ -105,6 +106,13 @@ cols = 10
 
 maze = kruskal_maze(rows, cols)
 
+times = {
+    "bfs": 0,
+    "dfs": 0,
+    "dijkstras": 0,
+    "a_start":0
+}
+
 while True:
     # Choose random start and end points
     all_vertices = [item for sublist in maze for item in sublist]
@@ -114,9 +122,17 @@ while True:
     # Ensure start and end are different
     if start != end:
         matrix = generate_matrix(maze, rows, cols)
-        path_bfs = bfs(matrix, start, end)
-        path_dfs = dfs(matrix, start, end)
 
+        start_ = time.time()
+        path_bfs = bfs(matrix, start, end)
+        end_ = time.time()
+        times["bfs"] = end_ - start_
+
+        start_ = time.time()
+        path_dfs = dfs(matrix, start, end)
+        end_ = time.time()
+
+        times["dfs"] = end_ - start_
 
         # If a valid path is found, print the matrix and path, then break the loop
         if len(path_bfs) != 0:
@@ -156,4 +172,3 @@ for i in range(len(matrix)):
             updated_matrix_dfs[i][j] = 0
 
 print(updated_matrix_dfs)
-
