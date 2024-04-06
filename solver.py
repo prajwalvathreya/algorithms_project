@@ -235,10 +235,13 @@ while not end_maze_solver:
         path_dfs = dfs(matrix, start, end)
         dfs_end = time.time_ns()
 
-<<<<<<< HEAD
         a_star_start = time.time_ns()
         path_a_star = a_star(matrix, start, end)
         a_star_end = time.time_ns()
+
+        dijkstra_start = time.time_ns()
+        path_dijkstra = dijkstra(matrix, start, end, all_vertices)
+        dijkstra_end = time.time_ns()
     
         print("Start:", start)
         print("End:", end)
@@ -248,6 +251,7 @@ while not end_maze_solver:
         # Update matrix to highlight the path
         updated_matrix_bfs = matrix.copy()
         updated_matrix_dfs = matrix.copy()
+        updated_matrix_dijkstra = matrix.copy()
         updated_matrix_a_star = matrix.copy()
 
         for i in range(len(matrix)):
@@ -262,9 +266,7 @@ while not end_maze_solver:
         print(path_bfs)
         print("BFS path")
         print(updated_matrix_bfs)
-        print()
 
-    
         for i in range(len(matrix)):
             row = matrix[i]
             for j in range(len(row)):
@@ -272,39 +274,27 @@ while not end_maze_solver:
                     updated_matrix_dfs[i][j] = 1  # Highlight the path
                 else:
                     updated_matrix_dfs[i][j] = 0
-=======
-        # If a valid path is found, print the matrix and path, then break the loop
-        if len(path_bfs) != 0:
-            print(matrix)
-            print("Solution Exists for BFS.")
-            print(path_bfs)
-            # break
-
-        if len(path_dfs) != 0:
-            #print(matrix)
-            print("Solution Exists for DFS.")
-            print(path_dfs)
-            # break
-
-        if len(path_dijsktra) != 0:
-            #print(matrix)
-            print("Solution Exists for Dijsktra.")
-            print(path_dijsktra)
-            break
-
-# Update matrix to highlight the path
-updated_matrix_bfs = matrix.copy()
-updated_matrix_dfs = matrix.copy()
-updated_matrix_dijkstra = matrix.copy()
->>>>>>> e175f9d (Finished implementing Dijkstra)
 
         print("DFS took", dfs_end - dfs_start, "nano seconds")
         print(path_dfs)
         print("DFS path")
         print(updated_matrix_dfs)
 
-<<<<<<< HEAD
-     
+        for i in range(len(matrix)):
+            row = matrix[i]
+            for j in range(len(row)):
+                if (i, j) in path_dijkstra:
+                    # highlight the path
+                    updated_matrix_dijkstra[i][j] = 1
+                else:
+                    updated_matrix_dijkstra[i][j] = 0
+
+        print("Dijkstra took", dijkstra_end - dijkstra_start, "nano seconds")
+        print(path_dijkstra)
+        print("Dijkstra path")
+        print(updated_matrix_dijkstra)
+
+
         for i in range(len(matrix)):
             row = matrix[i]
             for j in range(len(row)):
@@ -317,39 +307,3 @@ updated_matrix_dijkstra = matrix.copy()
         print(path_a_star)
         print("A* path")
         print(updated_matrix_a_star)
-=======
-for i in range(len(matrix)):
-    row = matrix[i]
-    for j in range(len(row)):
-        if (i, j) in path_bfs:
-            updated_matrix_bfs[i][j] = 1  # Highlight the path
-        else:
-            updated_matrix_bfs[i][j] = 0
-
-print("Solution for BFS:")
-print(updated_matrix_bfs)
-
-
-for i in range(len(matrix)):
-    row = matrix[i]
-    for j in range(len(row)):
-        if (i, j) in path_dfs:
-            updated_matrix_dfs[i][j] = 1  # Highlight the path
-        else:
-            updated_matrix_dfs[i][j] = 0
-
-print("Solution for DFS:")
-print(updated_matrix_dfs)
-
-for i in range(len(matrix)):
-    row = matrix[i]
-    for j in range(len(row)):
-        if (i, j) in path_dijsktra:
-            # highlight the path using number 1
-            updated_matrix_dijkstra[i][j] = 1
-        else:
-            updated_matrix_dijkstra[i][j] = 0
-
-print("Solution for Dijsktra:")
-print(updated_matrix_dijkstra)
->>>>>>> e175f9d (Finished implementing Dijkstra)
