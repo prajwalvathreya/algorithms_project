@@ -240,6 +240,10 @@ def solver():
             a_star_start = time.time_ns()
             path_a_star = a_star(matrix, start, end)
             a_star_end = time.time_ns()
+
+            dijkstra_start = time.time_ns()
+            path_dijkstra = dijkstra(matrix, start, end, all_vertices)
+            dijkstra_end = time.time_ns()
         
             print("Start:", start)
             print("End:", end)
@@ -250,6 +254,7 @@ def solver():
             updated_matrix_bfs = matrix.copy()
             updated_matrix_dfs = matrix.copy()
             updated_matrix_a_star = matrix.copy()
+            updated_matrix_dijkstra = matrix.copy()
 
             for i in range(len(matrix)):
                 row = matrix[i]
@@ -292,6 +297,20 @@ def solver():
             print(path_a_star)
             print("A* path")
             print(updated_matrix_a_star)
+
+            for i in range(len(matrix)):
+                row = matrix[i]
+            for j in range(len(row)):
+                if (i, j) in path_dijkstra:
+                    # highlight the path
+                    updated_matrix_dijkstra[i][j] = 1
+                else:
+                    updated_matrix_dijkstra[i][j] = 0
+
+            print("Dijkstra took", dijkstra_end - dijkstra_start, "nano seconds")
+            print(path_dijkstra)
+            print("Dijkstra path")
+            print(updated_matrix_dijkstra)
 
             transposed_matrix = np.transpose(matrix)
 
