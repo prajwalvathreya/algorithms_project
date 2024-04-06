@@ -40,7 +40,7 @@ def bfs(matrix_maze, start, end):
     return path
 
 
-def dijkstra(matrix_maze, start, end):
+def dijkstra(matrix_maze, start, end, unvisited_vertices):
     """
     Perform Dijkstra's algorithm to find a path from start to end in the maze represented by matrix_maze.
 
@@ -52,10 +52,13 @@ def dijkstra(matrix_maze, start, end):
     Returns:
         list: A list of vertices representing the path from start to end.
     """
+    if end or start not in unvisited_vertices:
+        print("No path found")
+        return []
     # sets to track visited and unvisited vertices
     visited = set()
     nrows, ncols = matrix_maze.shape
-    unvisited = {(i, j) for i in range(nrows) for j in range(ncols)}
+    unvisited = {(i, j) for (i, j) in unvisited_vertices}
     # dijkstra table to store shortest distance and previous vertex
     dijkstra_table = {vertex: (float('inf'), None) for vertex in unvisited}
     # use (-100, -100) for the previous vertex of the start vertex
@@ -132,7 +135,7 @@ while True:
         matrix = generate_matrix(maze, rows, cols)
         path = bfs(matrix, start, end)
         # check dijkstra algorithm
-        path2 = dijkstra(matrix, start, end)
+        path2 = dijkstra(matrix, start, end, all_vertices)
         print("start: ", start)
         print("end: ", end)
         print("dijkstra: ", path2)
