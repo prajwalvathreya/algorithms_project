@@ -21,3 +21,6 @@ To run the solver script, execute the following command:
 
 ```bash
 python solver.py
+
+```server
+uvicorn main:app --reload
