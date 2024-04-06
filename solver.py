@@ -1,6 +1,8 @@
 from collections import deque
 from generator import *
 import random
+import heapq
+import time
 
 def bfs(matrix_maze, start, end):
     """
@@ -74,6 +76,33 @@ def dfs(matrix_maze, start, end):
                 stack.append(neighbor)
                 path.append(neighbor)
 
+    return path  
+
+# a star with h as manhattan distance from node to end and g as steps taken
+
+def a_star(matrix_maze, start, end):
+    a_star_heap = []
+    visited = set()
+    path = []
+    heapq.heappush(a_star_heap, (0, start, []))
+
+    while a_star_heap:
+        g, current, path = heapq.heappop(a_star_heap)
+
+        if current == end:
+            return path
+
+        if current in visited:
+            continue
+
+        visited.add(current)
+
+        for neighbor in get_neighbors(current):
+            row, col = neighbor
+            if matrix_maze[row][col] == 0:
+                h = abs(row - end[0]) + abs(col - end[1])
+                heapq.heappush(a_star_heap, (g + 1 + h, neighbor, path + [neighbor]))
+
     return path
 
 def get_neighbors(vertex):
@@ -105,7 +134,12 @@ cols = 10
 
 maze = kruskal_maze(rows, cols)
 
-while True:
+
+invalid_maze_count = 0
+end_maze_solver = False
+time_for_valid_maze = time.time_ns()
+
+while not end_maze_solver:
     # Choose random start and end points
     all_vertices = [item for sublist in maze for item in sublist]
     start = random.choice(all_vertices)
@@ -114,46 +148,78 @@ while True:
     # Ensure start and end are different
     if start != end:
         matrix = generate_matrix(maze, rows, cols)
+
+        bfs_start = time.time_ns()
         path_bfs = bfs(matrix, start, end)
+        bfs_end = time.time_ns()
+
+        if end not in path_bfs:
+            invalid_maze_count += 1
+            continue
+    
+        time_for_valid_maze = time.time_ns() - time_for_valid_maze - (bfs_end - bfs_start)
+
+        end_maze_solver = True
+
+        print("Found valid maze after", invalid_maze_count, "invalid mazes")
+        print("Time taken to find valid maze:", time_for_valid_maze, "nano seconds")
+
+        dfs_start = time.time_ns()
         path_dfs = dfs(matrix, start, end)
+        dfs_end = time.time_ns()
 
+        a_star_start = time.time_ns()
+        path_a_star = a_star(matrix, start, end)
+        a_star_end = time.time_ns()
+    
+        print("Start:", start)
+        print("End:", end)
+        print("Maze:")
+        print(matrix)
 
-        # If a valid path is found, print the matrix and path, then break the loop
-        if len(path_bfs) != 0:
-            print(matrix)
-            print("Solution Exists for BFS")
-            print(path_bfs)
-        #    break
+        # Update matrix to highlight the path
+        updated_matrix_bfs = matrix.copy()
+        updated_matrix_dfs = matrix.copy()
+        updated_matrix_a_star = matrix.copy()
 
-        if len(path_dfs) != 0:
-            #print(matrix)
-            print("Solution Exists for DFS")
-            print(path_dfs)
-            break
+        for i in range(len(matrix)):
+            row = matrix[i]
+            for j in range(len(row)):
+                if (i, j) in path_bfs:
+                    updated_matrix_bfs[i][j] = 1  # Highlight the path
+                else:
+                    updated_matrix_bfs[i][j] = 0
 
-# Update matrix to highlight the path
-updated_matrix_bfs = matrix.copy()
-updated_matrix_dfs = matrix.copy()
+        print("BFS took", bfs_end - bfs_start, "nano seconds")
+        print(path_bfs)
+        print("BFS path")
+        print(updated_matrix_bfs)
+        print()
 
+    
+        for i in range(len(matrix)):
+            row = matrix[i]
+            for j in range(len(row)):
+                if (i, j) in path_dfs:
+                    updated_matrix_dfs[i][j] = 1  # Highlight the path
+                else:
+                    updated_matrix_dfs[i][j] = 0
 
-for i in range(len(matrix)):
-    row = matrix[i]
-    for j in range(len(row)):
-        if (i, j) in path_bfs:
-            updated_matrix_bfs[i][j] = 1  # Highlight the path
-        else:
-            updated_matrix_bfs[i][j] = 0
+        print("DFS took", dfs_end - dfs_start, "nano seconds")
+        print(path_dfs)
+        print("DFS path")
+        print(updated_matrix_dfs)
 
-print(updated_matrix_bfs)
+     
+        for i in range(len(matrix)):
+            row = matrix[i]
+            for j in range(len(row)):
+                if (i, j) in path_a_star:
+                    updated_matrix_a_star[i][j] = 1  # Highlight the path
+                else:
+                    updated_matrix_a_star[i][j] = 0
 
-
-for i in range(len(matrix)):
-    row = matrix[i]
-    for j in range(len(row)):
-        if (i, j) in path_dfs:
-            updated_matrix_dfs[i][j] = 1  # Highlight the path
-        else:
-            updated_matrix_dfs[i][j] = 0
-
-print(updated_matrix_dfs)
-
+        print("A* took", a_star_end - a_star_start, "nano seconds")
+        print(path_a_star)
+        print("A* path")
+        print(updated_matrix_a_star)
