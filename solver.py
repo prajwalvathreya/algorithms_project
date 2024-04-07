@@ -323,6 +323,8 @@ def solver():
                 "bfs_time": bfs_end - bfs_start,
                 "dfs_time": dfs_end - dfs_start,
                 "a_star_time": a_star_end - a_star_start,
+                "dijkstra": path_dijkstra,
+                "dijkstra_time": dijkstra_end - dijkstra_start,
                 "time_to_find_valid_maze": time_for_valid_maze,
                 "invalid_maze_count": invalid_maze_count,
                 "maze": json.dumps(transposed_matrix.tolist())
